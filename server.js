@@ -57,7 +57,10 @@ async function parseRepo(url) {
 
 async function loadRepo(url) {
   const { owner, repo, headers } = await parseRepo(url);
-  const t = await fetch(`https://api.github.com/repos/${owner}/${repo}/git/trees/HEAD?recursive=1`, { headers });
+  let t = await fetch(`https://api.github.com/repos/${owner}/${repo}/git/trees/HEAD?recursive=1`, { headers });
+  // A fine-grained token may lack access to this repo: retry anonymously (public repos still work).
+  if (t.status === 403 && process.env.GITHUB_TOKEN)
+    t = await fetch(`https://api.github.com/repos/${owner}/${repo}/git/trees/HEAD?recursive=1`, { headers: { 'User-Agent': 'todcode' } });
   if (t.status === 403) throw new HttpError(429, 'GitHub rate limit reached. Add a GITHUB_TOKEN or wait a few minutes.');
   if (!t.ok) throw new HttpError(404, 'Could not read that repo. Is it public and spelled correctly?');
   const { tree } = await t.json();
