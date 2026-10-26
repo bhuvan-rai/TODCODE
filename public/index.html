@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TodCode: code explained like a toddler</title>
+  <meta name="description" content="Upload code files or paste a public GitHub repo link. TodCode explains every part in plain, easy-to-follow English using an open-weight AI model.">
+  <meta name="theme-color" content="#f6f5ef">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="TodCode: code explained in plain English">
+  <meta property="og:description" content="Drop in code or a GitHub link and get a plain-language explanation from an open-weight model.">
+  <meta property="og:url" content="https://YOUR-APP.ondigitalocean.app/">
+  <meta name="twitter:card" content="summary">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"WebApplication","name":"TodCode","applicationCategory":"DeveloperApplication","operatingSystem":"Any (web)","description":"Explains code files and GitHub repositories in plain, easy-to-follow language using an open-weight language model.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&family=IBM+Plex+Sans:wght@400;600&family=Young+Serif&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="bar">
+    <nav aria-label="Primary"><a href="#top">HOME</a><a href="#about">ABOUT THIS</a></nav>
+  </header>
+
+  <main id="top">
+    <section class="wrap hero">
+      <h1>TodCode</h1>
+      <p class="lede">Give it a code file or a GitHub link. TodCode reads the code and explains what it does in plain, simple English — detailed and accurate, no jargon you have to google.</p>
+      <p class="sub">Built for people who inherit a codebase and have no idea where to start.</p>
+    </section>
+
+    <section class="wrap inputs" aria-label="Choose code to explain">
+      <div class="box" id="file-box">
+        <p class="title">learn about a script/project folder here</p>
+        <div id="drop" role="button" tabindex="0" aria-label="Choose code files or drop them here">Drop code files here, or click to choose them</div>
+        <input type="file" id="picker" multiple hidden>
+        <ul id="flist"></ul>
+        <p class="note" id="fnote"></p>
+        <button class="primary" id="go-files" type="button" disabled>Explain these files</button>
+      </div>
+
+      <form class="box" id="repo-box" novalidate>
+        <p class="title"><label for="repo">OR learn about a GitHub repo</label></p>
+        <input id="repo" type="url" inputmode="url" autocomplete="off" placeholder="https://github.com/owner/repo" pattern="https://github\.com/[\w.\-]+/[\w.\-]+/?">
+        <p class="note grow">Public repos on github.com only. TodCode reads the README and up to 8 of the most important code files.</p>
+        <button class="primary" id="go-repo" type="submit">Explain this repo</button>
+      </form>
+    </section>
+
+    <section class="wrap" id="result">
+      <h2>The explanation</h2>
+      <div id="out" class="empty" aria-live="polite">Nothing yet. Pick files or paste a link above.</div>
+
+      <!-- Appears after a repo explanation: zoom into any one file -->
+      <div id="pick" hidden>
+        <label for="repo-file">Zoom into one file from this repo</label>
+        <select id="repo-file"></select>
+        <button class="primary" id="go-one" type="button">Explain this file</button>
+      </div>
+    </section>
+  </main>
+
+  <footer id="about">
+    <div class="wrap">
+      <h2>How TodCode works, and where the open-source AI sits</h2>
+      <p>You give TodCode code. The browser sends it to our own small server, which adds a strict prompt and asks an <strong>open-weight language model</strong> to explain it. The answer comes back as Markdown and is cleaned before it is shown.</p>
+      <pre>browser  →  POST /api/explain  →  Node server (holds the key)
+                                     ├─ Groq: qwen/qwen3.8-27b
+                                     └─ Ollama on your laptop (no cloud at all)</pre>
+      <p>The model is the product. Without it there is nothing to show: no rules engine, no templates. We use open weights because the same code runs against a hosted model today and a model on your own machine tomorrow, by changing three environment variables. Your code never has to leave your computer.</p>
+      <table>
+        <tr><th>Part</th><th>Open?</th></tr>
+        <tr><td>Qwen model weights</td><td>Yes. Download, inspect, run offline.</td></tr>
+        <tr><td>Ollama (local runner)</td><td>Yes</td></tr>
+        <tr><td>Groq (hosting)</td><td>No. Paid-for service we use for speed.</td></tr>
+        <tr><td>TodCode itself</td><td>Yes, MIT licence on GitHub.</td></tr>
+      </table>
+      <p class="small">Limits: requests are trimmed to fit the free tier (about 9,000 characters per request), repos use at most 8 files per overview, and the model can be wrong. Read the full list in the README.</p>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
