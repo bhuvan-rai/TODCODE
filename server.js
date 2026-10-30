@@ -1,10 +1,15 @@
+import path from 'path';
+import { fileURLToPath } from 'url';
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+
 import 'dotenv/config';
 import express from 'express';
 
 const app = express();
 app.set('trust proxy', 1);
 app.use(express.json({ limit: '2mb' }));
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // ---- providers: tried in order; the first one that answers wins ----
 const providers = [
